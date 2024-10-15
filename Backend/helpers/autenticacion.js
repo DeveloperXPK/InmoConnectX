@@ -35,7 +35,7 @@ function validarToken(req, res, next) {
     try {
 
         // Extraemos el token de la cabecera de la petición
-        const token = req.headers.authorization.split('')[1];
+        const token = req.headers.authorization.split(' ')[1];
 
         // Decodificamos el token
         const payload = jwt.decode(token, SECRET);
