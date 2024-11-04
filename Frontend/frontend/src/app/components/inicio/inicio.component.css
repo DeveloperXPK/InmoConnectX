@@ -1,0 +1,26 @@
+.property-card {
+    display: inline-flex;
+    margin: 2rem;
+    background-color: white;
+    border-radius: 10px;
+    color: black;
+    padding: 1rem;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 300px;
+}
+
+.property-info h2 {
+    color: #003366;
+    font-size: 1.5rem;
+}
+
+.property-info h3 {
+    font-size: 1.2rem;
+}
+
+.property-info p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0.5rem 0;
+}

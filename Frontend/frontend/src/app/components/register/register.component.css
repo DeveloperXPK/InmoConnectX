@@ -1,0 +1,75 @@
+.container {
+    display: block;
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 100px auto;
+    width: 90%;
+    max-width: 900px;
+}
+
+.content {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+}
+.content img {
+    width: 400px;
+    height: auto;
+    border-radius: 10px;
+    margin-right: 2rem;
+}
+.form-container {
+    width: 100%;
+    max-width: 400px;
+}
+.form-container h2 {
+    color: #073763;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+/* Formulario */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+    background-color: #f0f0f0;
+}
+.form-group label {
+    font-size: 0.9rem;
+    color: #555;
+    margin-bottom: 0.5rem;
+}
+.form-group input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+.form-group .checkbox {
+    display: flex;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+    color: #555;
+}
+.form-group button {
+    background-color: #073763;
+    color: #fff;
+    padding: 0.75rem 2rem;
+    border: none;
+    border-radius: 50px; /* Hacer el botón redondeado */
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
