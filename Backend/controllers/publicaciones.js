@@ -1,5 +1,4 @@
 // Controlador para las publicaciones (crear, obtener, actualizar y eliminar)
-const publicaciones = require('../models/publicaciones');
 const Publicaciones = require('../models/publicaciones');
 
 // Crear una publicación
