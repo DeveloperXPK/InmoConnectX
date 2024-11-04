@@ -12,8 +12,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/inmoconnect', { useNewUrlParser: tru
     .then(
         () => {
             console.log('Conexión a la base de datos establecida con éxito');
-            app.listen(desiredPORT, () => {
-                console.log(`Servidor corriendo en el puerto http://localhost:${desiredPORT}`);
+            app.listen(9898, () => {
+                console.log(`Servidor corriendo en el puerto http://localhost:9898`);
             });
         },
         err => {
