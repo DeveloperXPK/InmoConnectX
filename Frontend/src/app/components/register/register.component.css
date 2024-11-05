@@ -41,12 +41,13 @@
 .form-group input[type="email"],
 .form-group input[type="password"] {
     width: 100%;
-    padding: 0.75rem;
+    padding: 12px;
     margin: 0.5rem 0;
-    border-radius: 5px;
-    border: 1px solid #ddd;
-    font-size: 1rem;
+    border-radius: 25px;
+    border: none;
+    font-size: 16px;
     background-color: #f0f0f0;
+    color: #333;
 }
 .form-group label {
     font-size: 0.9rem;
