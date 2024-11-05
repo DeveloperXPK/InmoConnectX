@@ -59,6 +59,16 @@ export class PublicacionComponent {
       imagen: this.imagen
     }
 
+    // Creamos un filtro que verifica que todos los campos esten llenos
+    if(!this.titulo || !this.descripcion || !this.precio || !this.ubicacion || !this.imagen) {
+      alert('Todos los campos son obligatorios'); // Si hay campos vacios enviamos una alerta
+      return;
+    } else if (typeof this.precio === 'string') {
+      // Continue with the request
+      alert('El precio debe ser numerico');
+      return;
+    }
+
     this.http.post(url, body, { headers: this.autenticacionService.getAuthHeaders()}).subscribe({
       next: res => {
         this.apiResponse = res;
