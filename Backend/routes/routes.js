@@ -37,7 +37,7 @@ routes.delete('/publicaciones/:_id',
 // Obtener publicaciones
 routes.get('/publicaciones',
     token.validarToken,
-    token.validarPermiso(['admin']),
+    token.validarPermiso(['admin', 'user']),
     publicacionesController.obtenerPublicaciones
 );
 
