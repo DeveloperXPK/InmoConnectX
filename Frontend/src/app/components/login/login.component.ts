@@ -10,16 +10,16 @@ import { AutenticacionService } from '../../services/autenticacion.service';
   imports: [FormsModule],
   template: `
   <div class="container">
-    <div class="image-section">
-      <img src="assets/images/interior.jpg" alt="Imagen de fondo">
-    </div>
-    <div class="form-section">
-      <h2>Inicio Sesión</h2>
-      <form>
-        <input type="text" placeholder="Email" name="email" [(ngModel)]='email' required>
-        <input type="password" placeholder="Contraseña" name="password" [(ngModel)]='password' required>
-        <button (click)="validateUserCredentials()">Ingresar</button>
-      </form>
+    <div class="content">
+      <img src="assets/images/interior.jpg" alt="Imagen de registro"> <!-- Coloca aquí la ruta de tu imagen -->
+      <div class="form-container">
+        <h2>Iniciar Sesion</h2>
+        <form class="form-group">
+          <input type="email" placeholder="Email" name="email" [(ngModel)]='email' required>
+          <input type="password" placeholder="Contraseña" name="password" [(ngModel)]='password' required>
+          <button (click)='validateUserCredentials()'>Ingresar</button>
+        </form>
+      </div>
     </div>
   </div>
   `,
@@ -44,7 +44,6 @@ export class LoginComponent {
     // y no en la URL como en el caso de GET
     this.http.post(url, body, {headers: this.autenticacionService.getAuthHeaders()}).subscribe({
       next: res => {
-        console.log("Se ingreso con exito");
         this.apiResponse = res; // Se almacena la respuesta de la API en la variable apiResponse
         let token = this.apiResponse.token; // Se obtiene el token de la respuesta de la API
 
