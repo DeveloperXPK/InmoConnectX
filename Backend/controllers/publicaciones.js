@@ -9,6 +9,7 @@ function crearPublicacion(req, res) {
         titulo,
         precio,
         descripcion,
+        ubicacion,
         imagenes
     } = req.body;
 
@@ -17,6 +18,7 @@ function crearPublicacion(req, res) {
     publicacion.titulo = titulo;
     publicacion.precio = precio;
     publicacion.descripcion = descripcion;
+    publicacion.ubicacion = ubicacion;
     publicacion.imagenes = imagenes;
 
     // Guardamos la publicación en la base de datos
@@ -42,6 +44,7 @@ function editarPublicacion(req, res) {
         titulo,
         precio,
         descripcion,
+        ubicacion,
         imagenes
     } = req.body;
 
@@ -50,6 +53,7 @@ function editarPublicacion(req, res) {
     publicacionEditada.titulo = titulo;
     publicacionEditada.precio = precio;
     publicacionEditada.descripcion = descripcion;
+    publicacionEditada.ubicacion = ubicacion;
     publicacionEditada.imagenes = imagenes;
 
     // Actualizamos la publicación en la base de datos
