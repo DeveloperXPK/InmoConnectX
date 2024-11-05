@@ -8,6 +8,7 @@ const publicacionSchema = Schema({
     titulo: String,
     precio: Number,
     descripcion: String,
+    ubicacion: String,
     imagenes: String
 })
 
