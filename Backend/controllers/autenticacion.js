@@ -11,8 +11,7 @@ function registrarUsuario(req, res) {
         nombre,
         apellidos,
         email,
-        password,
-        rol
+        password
     } = req.body;
 
     // Creamos el salt y hasheamos la contraseña
