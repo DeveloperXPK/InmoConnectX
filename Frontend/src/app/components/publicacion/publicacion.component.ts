@@ -11,15 +11,20 @@ import { FormsModule } from '@angular/forms';
   imports: [FormsModule],
   template: `
   <div class="container">
-    <h2>Crear Publicación</h2>
-    <form>
-      <input type="text" placeholder="Titulo" name="titulo" [(ngModel)]='titulo' required>
-      <input type="text" placeholder="Descripcion" name="descripcion" [(ngModel)]='descripcion' required>
-      <input type="text" placeholder="Precio" name="precio" [(ngModel)]='precio' required>
-      <input type="text" placeholder="Ubicacion" name="ubicacion" [(ngModel)]='ubicacion' required>
-      <input type="text" placeholder="Imagen" name="imagen" [(ngModel)]='imagen' required>
-      <button (click)="createPost()">Crear Publicación</button>
-    </form>
+    <div class="content">
+      <img src="assets/images/interior.jpg" alt="Imagen de registro"> <!-- Coloca aquí la ruta de tu imagen -->
+      <div class="form-container">
+        <h2>Crear Publicacion</h2>
+        <form class="form-group">
+          <input type="text" placeholder="Titulo" name="titulo" [(ngModel)]='titulo' required>
+          <input type="text" placeholder="Descripcion" name="descripcion" [(ngModel)]='descripcion' required>
+          <input type="text" placeholder="Precio" name="precio" [(ngModel)]='precio' required>
+          <input type="text" placeholder="Ubicacion" name="ubicacion" [(ngModel)]='ubicacion' required>
+          <input type="text" placeholder="Imagen" name="imagen" [(ngModel)]='imagen' required>
+          <button (click)="createPost()">Crear Publicación</button>
+        </form>
+      </div>
+    </div>
   </div>
   `,
   styleUrl: './publicacion.component.css'
