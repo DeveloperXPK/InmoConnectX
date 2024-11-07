@@ -3,11 +3,12 @@ import { Router } from "@angular/router";
 import { AutenticacionService } from "../../services/autenticacion.service";
 import { Posts } from "../../interfaces/posts";
 import { PublicacionesService } from "../../services/publicaciones.service";
+import { CommonModule } from "@angular/common";
 
 @Component({
   selector: "app-inicio",
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   template: `
     @if (inmuebles.length > 0) { 
       @for (inmueble of inmuebles; track
@@ -15,10 +16,10 @@ import { PublicacionesService } from "../../services/publicaciones.service";
       <div class="property-card">
         <div class="property-info">
           <h2>{{ inmueble.titulo }}</h2>
-          <h3>{{ inmueble.precio }}</h3>
+          <h3>{{ inmueble.precio | currency : "COP" : "symbol-narrow" : "1.0-0"}}</h3>
           <p>{{ inmueble.descripcion }}</p>
           <p>{{ inmueble.ubicacion }}</p>
-          <a>Saber más</a>
+          <a (click)="verDetalles(inmueble._id)">Saber más</a>
         </div>
       </div>
       } 
@@ -62,5 +63,10 @@ export class InicioComponent implements OnInit {
   logout() {
     this.autenticacionService.clearToken();
     this.router.navigate(["/login"]);
+  }
+
+
+  verDetalles(id: string) {
+    this.router.navigate(["/publicacion", id]);
   }
 }
