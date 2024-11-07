@@ -1,74 +1,78 @@
-import { HttpClient } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AutenticacionService } from '../../services/autenticacion.service';
-import { FormsModule } from '@angular/forms';
-
+import { Component, OnInit } from "@angular/core";
+import { ActivatedRoute, Router } from "@angular/router";
+import { CommonModule } from "@angular/common";
+import { PublicacionesService } from "../../services/publicaciones.service";
+import { Posts } from "../../interfaces/posts";
 
 @Component({
-  selector: 'app-publicacion',
+  selector: "app-publicacion",
   standalone: true,
-  imports: [FormsModule],
+  imports: [CommonModule],
   template: `
-  <div class="container">
-    <div class="content">
-      <img src="assets/images/interior.jpg" alt="Imagen de registro"> <!-- Coloca aquí la ruta de tu imagen -->
-      <div class="form-container">
-        <h2>Crear Publicacion</h2>
-        <form class="form-group">
-          <input type="text" placeholder="Titulo" name="titulo" [(ngModel)]='titulo' required>
-          <input type="text" placeholder="Descripcion" name="descripcion" [(ngModel)]='descripcion' required>
-          <input type="text" placeholder="Precio" name="precio" [(ngModel)]='precio' required>
-          <input type="text" placeholder="Ubicacion" name="ubicacion" [(ngModel)]='ubicacion' required>
-          <input type="text" placeholder="Imagen" name="imagen" [(ngModel)]='imagen' required>
-          <button (click)="createPost()">Crear Publicación</button>
-        </form>
+    @if (post) {
+    <div class="container">
+      <h2>{{ post.titulo }}</h2>
+      <div class="main-image">
+        @if (post.imagen) {
+        <img [src]="post.imagen" [alt]="post.titulo" />
+        }
       </div>
+      <div class="details">
+        <p class="price">
+          {{ post.precio | currency : "COP" : "symbol-narrow" : "1.0-0" }}
+        </p>
+        <p class="description">{{ post.descripcion }}</p>
+        <p class="location">{{ post.ubicacion }}</p>
+      </div>
+      <button (click)="volver()">Volver</button>
+      <button (click)="eliminarPost(post._id)">Eliminar</button>
     </div>
-  </div>
+    } @else {
+    <p>Cargando publicación...</p>
+    }
   `,
-  styleUrl: './publicacion.component.css'
+  styleUrl: "./publicacion.component.css",
 })
-export class PublicacionComponent {
+export class PublicacionComponent implements OnInit {
+  post?: Posts;
 
-  public titulo: string = '';
-  public descripcion: string = '';
-  public precio: string = '';
-  public ubicacion: string = '';
-  public imagen: string = '';
-  public apiResponse: any = '';
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private publicacionService: PublicacionesService
+  ) {}
 
-  // Dentro del constructor inyectamos autenticacionService para verificar si el usuario esta autenticado
-  constructor(private http: HttpClient, private router: Router, private autenticacionService: AutenticacionService) {}
-
-  // Metodo que se ejecuta al iniciar el componente
   ngOnInit() {
-    if(!this.autenticacionService.isAuthenticated()){
-      this.router.navigate(['/login']);
+    const id = this.route.snapshot.paramMap.get("id"); // Obtener el id de la URL
+
+    if (id) {
+      this.publicacionService.getPost(id).subscribe({
+        next: (response) => {
+          this.post = response.publicacion;
+        },
+        error: (error) => {
+          console.error("Error al cargar la publicación:", error);
+          this.router.navigate(["/inicio"]); // Redirigir en caso de error
+        },
+      });
+    } else {
+      this.router.navigate(["/inicio"]);
     }
   }
 
-  public createPost(){
-    const url = 'http://localhost:9898/publicaciones';
+  volver() {
+    this.router.navigate(["/inicio"]);
+  }
 
-    const body = {
-      titulo: this.titulo,
-      descripcion: this.descripcion,
-      precio: this.precio,
-      ubicacion: this.ubicacion,
-      imagen: this.imagen
-    }
-
-    this.http.post(url, body, { headers: this.autenticacionService.getAuthHeaders()}).subscribe({
-      next: res => {
-        this.apiResponse = res;
-        this.router.navigate(['/inicio']);
+  eliminarPost(id: string) {
+    this.publicacionService.deletePost(id).subscribe({
+      next: (response) => {
+        console.log("Publicación eliminada:", response);
+        this.router.navigate(["/inicio"]);
       },
-      error: err => {
-        console.log(err);
+      error: (error) => {
+        console.error("Error al eliminar la publicación:", error);
       }
     })
-
-
   }
 }
