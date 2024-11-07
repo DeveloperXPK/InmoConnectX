@@ -7,8 +7,6 @@ import { Router } from '@angular/router';
 })
 export class AutenticacionService {
 
-  // Centraliza la lógica de autenticación
-
   private token: string = 'session_token'; // Nombre de la clave para guardar el token en sessionStorage
 
   constructor(private http: HttpClient, private router: Router) {} 
@@ -41,9 +39,10 @@ export class AutenticacionService {
     })
   }
   
+  // Metodo para obtener el header sin el token
   getHeaders(): HttpHeaders {
     return new HttpHeaders({
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json' // Indica que el contenido es de tipo JSON
     });
   }
 
