@@ -62,9 +62,12 @@ export class CrearPostComponent {
       }
     }
 
-    console.log(body);
+    if(!this.titulo || !this.descripcion || !this.precio || !this.ubicacion || !this.imagen){
+      alert('No deben haber campos vacios');
+      console.log('Faltan datos');
+      return;
+    }
 
-    
     this.http.post(url, body, { headers: this.autenticacionService.getAuthHeaders()}).subscribe({
       next: res => {
         this.apiResponse = res;
