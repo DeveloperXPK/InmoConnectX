@@ -17,7 +17,7 @@ import { FormsModule } from '@angular/forms';
         <form class="form-group">
           <input type="text" placeholder="Titulo" name="titulo" [(ngModel)]='titulo' required>
           <input type="text" placeholder="Descripcion" name="descripcion" [(ngModel)]='descripcion' required>
-          <input type="text" placeholder="Precio" name="precio" [(ngModel)]='precio' required>
+          <input type="number" placeholder="Precio" name="precio" [(ngModel)]='precio' required>
           <input type="text" placeholder="Ubicacion" name="ubicacion" [(ngModel)]='ubicacion' required>
           <input type="text" placeholder="Imagen" name="imagen" [(ngModel)]='imagen' required>
           <button (click)="createPost()">Crear Publicación</button>
@@ -29,12 +29,12 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './crear-post.component.css'
 })
 export class CrearPostComponent {
-  public titulo: string = '';
-  public descripcion: string = '';
-  public precio: string = '';
-  public ubicacion: string = '';
-  public imagen: string = '';
-  public apiResponse: any = '';
+  public titulo: string = ''; // Variable que almacena el titulo del post
+  public descripcion: string = ''; // Variable que almacena la descripcion del post
+  public precio: string = ''; // Variable que almacena el precio del post
+  public ubicacion: string = ''; // Variable que almacena la ubicacion del post
+  public imagen: string = '';  // Variable que almacena la imagen del post
+  public apiResponse: any = ''; // Variable que almacena la respuesta de la API
 
   // Dentro del constructor inyectamos autenticacionService para verificar si el usuario esta autenticado
   constructor(private http: HttpClient, private router: Router, private autenticacionService: AutenticacionService) {}
@@ -54,12 +54,22 @@ export class CrearPostComponent {
       descripcion: this.descripcion,
       precio: this.precio,
       ubicacion: this.ubicacion,
-      imagen: this.imagen
+      imagen: this.imagen,
+      usuario: {
+        _id: this.autenticacionService.getUser()._id,
+        nombre: this.autenticacionService.getUser().nombre,
+        email: this.autenticacionService.getUser().email
+      }
     }
 
+    console.log(body);
+
+    
     this.http.post(url, body, { headers: this.autenticacionService.getAuthHeaders()}).subscribe({
       next: res => {
         this.apiResponse = res;
+        console.log(this.apiResponse);
+        console.log(this.autenticacionService.getUser()._id);
         this.router.navigate(['/inicio']);
       },
       error: err => {
