@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
 import { PublicacionesService } from "../../services/publicaciones.service";
+import { AutenticacionService } from "../../services/autenticacion.service";
 import { Posts } from "../../interfaces/posts";
 
 @Component({
@@ -39,7 +40,8 @@ export class PublicacionComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private publicacionService: PublicacionesService
+    private publicacionService: PublicacionesService,
+    private autenticacionService: AutenticacionService
   ) {}
 
   ngOnInit() {
@@ -49,6 +51,7 @@ export class PublicacionComponent implements OnInit {
       this.publicacionService.getPost(id).subscribe({
         next: (response) => {
           this.post = response.publicacion;
+          this.publicacionService.setPost(this.post); // Guardar la publicación en sessionStorage
         },
         error: (error) => {
           console.error("Error al cargar la publicación:", error);
@@ -65,14 +68,33 @@ export class PublicacionComponent implements OnInit {
   }
 
   eliminarPost(id: string) {
-    this.publicacionService.deletePost(id).subscribe({
-      next: (response) => {
-        console.log("Publicación eliminada:", response);
-        this.router.navigate(["/inicio"]);
-      },
-      error: (error) => {
-        console.error("Error al eliminar la publicación:", error);
-      }
-    })
+    const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
+    const postInfo = this.publicacionService.getSessionPost(); // Obtener la información de la publicación
+
+    console.log("Id de usuario de la sesion" ,User._id);
+    console.log("Id de usuario de la publicacion", postInfo.usuario);
+    console.log("Rol de usuario de la sesion" ,User.rol);
+
+
+    // Verificar si el usuario autenticado es el autor de la publicación o es un administrador
+    // Si no es el autor o no es un administrador, no se permite eliminar la publicación
+    if((postInfo.usuario == User._id) || (User.rol == 'admin')) {
+      this.publicacionService.deletePost(id).subscribe({
+        next: (response) => {
+          console.log("Publicación eliminada:", response);
+          this.router.navigate(["/inicio"]);
+        },
+        error: (error) => {
+          console.error("Error al eliminar la publicación:", error);
+        }
+      })
+      return; // El return se hace para que no se ejecute el código que sigue
+    }
+
+    alert("No tienes permisos para eliminar esta publicación");
+    console.error("No tienes permisos para eliminar esta publicación");
+    return; // El return se hace para que no se ejecute el código que sigue
+
+    
   }
 }
