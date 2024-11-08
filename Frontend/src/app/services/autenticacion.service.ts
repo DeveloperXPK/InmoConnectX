@@ -44,8 +44,9 @@ export class AutenticacionService {
   }
 
   // Metodo para eliminar el token de la sesión
-  clearToken(): void {
+  clearSesion(): void {
     sessionStorage.removeItem(this.token); // Elimina el token de sessionStorage
+    sessionStorage.removeItem(this.user); // Elimina el usuario de sessionStorage
   }
 
   // Metodo para obtener el header con el token
