@@ -9,6 +9,7 @@ import { AutenticacionService } from "./autenticacion.service";
 })
 export class PublicacionesService {
   // Se define la url del backend (API) que se va a consumir
+  private post: string = 'session_post'; // Nombre de la clave para guardar el post en sessionStorage
   private url = "http://localhost:9898/publicaciones";
 
   // Se inyecta el servicio de autenticacion para poder enviar el token en las peticiones
@@ -31,6 +32,14 @@ export class PublicacionesService {
     return this.http.get<singlePostResponse>(`${this.url}/${id}`, {
       headers: this.autenticacionService.getAuthHeaders(), // Se envia el token en la peticion
     });
+  }
+
+  setPost(post: any): void {
+    sessionStorage.setItem(this.post, JSON.stringify(post)); // Guarda el post en sessionStorage
+  }
+
+  getSessionPost(): any {
+    return JSON.parse(sessionStorage.getItem(this.post) || "{}"); // Retorna el post de la sesión
   }
 
   // Metodo para eliminar una publicacion
