@@ -9,7 +9,16 @@ const publicacionSchema = Schema({
     precio: Number,
     descripcion: String,
     ubicacion: String,
-    imagenes: String
+    imagenes: String,
+    usuario: {
+        type: Schema.Types.ObjectId, // Referencia al ID del usuario
+        ref: 'Usuarios',         // Referencia al modelo de Usuario
+        required: true
+    },
+    fechaCreacion: {
+        type: Date,
+        default: Date.now
+    }
 })
 
 // mongoose.model('Nombre de la entidad', esquema)
