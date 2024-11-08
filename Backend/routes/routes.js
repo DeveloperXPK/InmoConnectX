@@ -30,7 +30,7 @@ routes.put('/publicaciones/:_id',
 // Eliminar publicación
 routes.delete('/publicaciones/:_id',
     token.validarToken,
-    token.validarPermiso(['admin']),
+    // token.validarPermiso(['admin']),
     publicacionesController.eliminarPublicacion
 );
 
