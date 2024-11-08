@@ -68,10 +68,12 @@ export class LoginComponent {
       .subscribe({
         next: (res) => {
           this.apiResponse = res; // Se almacena la respuesta de la API en la variable apiResponse
-          let token = this.apiResponse.token; // Se obtiene el token de la respuesta de la API
+          const token = this.apiResponse.token; // Se obtiene el token de la respuesta de la API
+          const user = this.apiResponse.usuario;
 
           this.autenticacionService.setToken(token); // Se guarda el token en el servicio AutenticacionService
-
+          this.autenticacionService.setUser(user);
+          console.log(this.apiResponse);
           this.router.navigate(["inicio"]); // Se redirige a la ruta inicio
         },
         error: (err) => {
