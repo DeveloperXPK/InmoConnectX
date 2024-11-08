@@ -21,7 +21,7 @@ function crearPublicacion(req, res) {
     publicacion.descripcion = descripcion; // Guardamos la descripción de la publicación
     publicacion.ubicacion = ubicacion; // Guardamos la ubicación de la publicación
     publicacion.imagenes = imagenes; // Guardamos las imágenes de la publicación
-    publicacion.usuario = usuario._id;  // Guardamos el id del usuario que crea la publicación
+    publicacion.usuario = usuario;
 
     // Guardamos la publicación en la base de datos
     publicacion.save()
