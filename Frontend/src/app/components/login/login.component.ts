@@ -1,63 +1,85 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
-import { AutenticacionService } from '../../services/autenticacion.service';
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { Component } from "@angular/core";
+import { FormsModule } from "@angular/forms";
+import { Router } from "@angular/router";
+import { AutenticacionService } from "../../services/autenticacion.service";
 
 @Component({
-  selector: 'app-login',
+  selector: "app-login",
   standalone: true,
   imports: [FormsModule],
   template: `
-  <div class="container">
-    <div class="image-section">
-      <img src="assets/images/interior.jpg" alt="Imagen de fondo">
+    <div class="container">
+      <div class="content">
+        <img src="assets/images/interior.jpg" alt="Imagen de registro" />
+        <!-- Coloca aquí la ruta de tu imagen -->
+        <div class="form-container">
+          <h2>Iniciar Sesion</h2>
+          <form class="form-group">
+            <input
+              type="email"
+              placeholder="Email"
+              name="email"
+              [(ngModel)]="email"
+              required
+            />
+            <input
+              type="password"
+              placeholder="Contraseña"
+              name="password"
+              [(ngModel)]="password"
+              required
+            />
+            <button (click)="validateUserCredentials()">Ingresar</button>
+          </form>
+        </div>
+      </div>
     </div>
-    <div class="form-section">
-      <h2>Inicio Sesión</h2>
-      <form>
-        <input type="text" placeholder="Email" name="email" [(ngModel)]='email' required>
-        <input type="password" placeholder="Contraseña" name="password" [(ngModel)]='password' required>
-        <button (click)="validateUserCredentials()">Ingresar</button>
-      </form>
-    </div>
-  </div>
   `,
-  styleUrl: './login.component.css'
+  styleUrl: "./login.component.css",
 })
 export class LoginComponent {
-  public email: string = '';
-  public password: string = '';
-  public apiResponse: any = ''; // Variable que se va a utilizar para almacenar la respuesta de la API
+  // Obtenemos los datos del usuario desde el formulario
+  public email: string = "";
+  public password: string = "";
+  public apiResponse: any = ""; // Variable que se va a utilizar para almacenar la respuesta de la API
 
-  constructor(private http: HttpClient, private router: Router, private autenticacionService: AutenticacionService){}
+  // Inyectamos los servicios que vamos a utilizar en el componente con el constructor
+  constructor(
+    private http: HttpClient, // Se inyecta el servicio HttpClient para realizar petic
+    private router: Router, // Se inyecta el servicio Router para redirigir a otras rutas
+    private autenticacionService: AutenticacionService // Se inyecta el servicio AutenticacionService para guardar el token
+  ) {}
 
   public validateUserCredentials(): void {
-    const url = 'http://localhost:9898/login'; // Url de la API que se va a consumir
+    const url = "http://localhost:9898/login"; // Url de la API que se va a consumir
 
     const body = {
-      email: this.email,
-      password: this.password
-    }
+      email: this.email.trim(),
+      password: this.password.trim(),
+      // Se envían las credenciales del usuario en el cuerpo de la petición y se almacenan en la variable body
+      // Limpiamos los espacios en blanco de los campos email y password con la función trim()
+    };
 
     // POST permite tener mayor seguridad en la transmisión de datos ya que los datos viajan en el cuerpo de la petición
     // y no en la URL como en el caso de GET
-    this.http.post(url, body, {headers: this.autenticacionService.getAuthHeaders()}).subscribe({
-      next: res => {
-        console.log("Se ingreso con exito");
-        this.apiResponse = res; // Se almacena la respuesta de la API en la variable apiResponse
-        let token = this.apiResponse.token; // Se obtiene el token de la respuesta de la API
+    this.http
+      .post(url, body, { headers: this.autenticacionService.getAuthHeaders() })
+      .subscribe({
+        next: (res) => {
+          this.apiResponse = res; // Se almacena la respuesta de la API en la variable apiResponse
+          const token = this.apiResponse.token; // Se obtiene el token de la respuesta de la API
+          const user = this.apiResponse.usuario;
 
-        this.autenticacionService.setToken(token); // Se guarda el token en sessionStorage
-
-        this.router.navigate(['inicio'])
-      },
-      error: err => {
-        alert('Las credenciales no coinciden');
-        console.log('Las credenciales no coinciden', err);
-      }
-    })
-
+          this.autenticacionService.setToken(token); // Se guarda el token en el servicio AutenticacionService
+          this.autenticacionService.setUser(user);
+          console.log(this.apiResponse);
+          this.router.navigate(["inicio"]); // Se redirige a la ruta inicio
+        },
+        error: (err) => {
+          alert("Las credenciales no coinciden"); // Se muestra un mensaje de error si las credenciales no coinciden
+          console.log("Las credenciales no coinciden", err);
+        },
+      });
   }
-
 }

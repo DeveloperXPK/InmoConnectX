@@ -1,67 +1,85 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { AutenticacionService } from '../../services/autenticacion.service';
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { AutenticacionService } from "../../services/autenticacion.service";
+import { Posts } from "../../interfaces/posts";
+import { PublicacionesService } from "../../services/publicaciones.service";
+import { CommonModule } from "@angular/common";
 
 @Component({
-  selector: 'app-inicio',
+  selector: "app-inicio",
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   template: `
-    @for (inmueble of inmuebles; track inmueble.id) {
-            <div class="property-card">
-                <div class="property-info">
-                    <h2>{{inmueble.name}}</h2>
-                    <h3>{{inmueble.price}}</h3>
-                    <p>{{inmueble.description}}</p>
-                    <a>Saber más</a> 
-                    <!-- Aqui estoy intentando pasar el id para pasar a una pagina donde se muestren los datos de la publicacion -->
-                    <!-- <app-publish-info [inmueble]="inmueble" /> -->
-                </div>
-            </div>
-        }
-
-      <button (click)='logout()'>Cerrar Sesión</button>
+    @if (inmuebles.length > 0) { 
+      @for (inmueble of inmuebles; track
+      inmueble._id) {
+      <div class="property-card">
+        <div class="property-info">
+          <h2>{{ inmueble.titulo }}</h2>
+          <h3>{{ inmueble.precio | currency : "COP" : "symbol-narrow" : "1.0-0"}}</h3>
+          <p>{{ inmueble.descripcion }}</p>
+          <p>{{ inmueble.ubicacion }}</p>
+          <a (click)="verDetalles(inmueble._id)">Saber más</a>
+        </div>
+      </div>
+      } 
+    } @else {
+      <h1>No hay inmuebles disponibles</h1>
+    }
+    <button (click)="logout()">Cerrar Sesión</button>
   `,
-  styleUrl: './inicio.component.css',
+  styleUrl: "./inicio.component.css",
 })
-export class InicioComponent {
-  constructor(private router: Router, private autenticacionService: AutenticacionService) {}
+export class InicioComponent implements OnInit {
+  inmuebles: Posts[] = []; // Se crea un arreglo de tipo Posts para almacenar los inmuebles
+
+  // Se inyectan los servicios de AutenticacionService y PublicacionesService
+  constructor(
+    private router: Router,
+    private autenticacionService: AutenticacionService,
+    private publicacionesService: PublicacionesService
+  ) {}
 
 
-
+  // Metodo que se ejecuta al cargar el componente
   ngOnInit() {
-    let token = sessionStorage.getItem('session_token');
-    if (!token) {
-      this.router.navigate(['/login']);
+
+    // Si no hay una sesion activa, se redirige al login
+    if (!this.autenticacionService.isAuthenticated()) {
+      this.router.navigate(["/login"]);
+      return; // Se finaliza la ejecucion del metodo
     }
+    
+    // Si existe una sesion activa, se cargan los posts
+    this.cargarPosts();
   }
 
-  logout(){
-    this.autenticacionService.clearToken();
-    this.router.navigate(['/login'])
+  // Metodo para cargar los posts
+  cargarPosts() {
+
+    // Se llama al metodo getPosts del servicio PublicacionesService y se suscribe a la respuesta
+    this.publicacionesService.getPosts().subscribe({
+      next: (data) => {
+        this.inmuebles = data.publicaciones; // data.publicaciones es el nombre del objeto que se recibe del backend
+        console.log("Posts cargados", this.inmuebles); // Se imprime en consola los posts cargados
+      },
+      // En caso de error, se imprime en consola el error
+      error: (error) => {
+        console.log("Error al cargar los posts", error);
+      },
+    });
   }
 
-  inmuebles = [
-    {
-      id: 1,
-      name: 'Casa en Medellin',
-      price: 500000000,
-      location: 'Medellin',
-      description: 'Casa en Medellin, 3 habitaciones, 2 baños, 1 parqueadero'
-    },
-    {
-      id: 2,
-      name: 'Apartamento en Bogota',
-      price: 300000000,
-      location: 'Bogota',
-      description: 'Apartamento en Bogota, 2 habitaciones, 1 baño, 1 parqueadero'
-    },
-    {
-      id: 3,
-      name: 'Casa en Cali',
-      price: 400000000,
-      location: 'Cali',
-      description: 'Casa en Cali, 4 habitaciones, 3 baños, 2 parqueadero'
-    }
-  ]
+  // Metodo para cerrar sesion
+  logout() {
+    // Se llama al metodo clearSesion del servicio AutenticacionService que limpia los datos de la sesion
+    this.autenticacionService.clearSesion(); 
+    this.router.navigate(["/login"]); // Se redirige al login
+  }
+
+  // Metodo para ver los detalles de un inmueble 
+  // Recibe como parametro el id del inmueble y asi anexar el id al path de la ruta
+  verDetalles(id: string) {
+    this.router.navigate(["/publicacion", id]); // Se redirige a la ruta /publicacion/:id
+  }
 }

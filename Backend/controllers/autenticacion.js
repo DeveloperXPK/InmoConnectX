@@ -66,7 +66,8 @@ function iniciarSesion(req, res) {
                         res.status(200)
                             .send({
                                 message: 'Inicio de sesión correcto',
-                                token: tokenGenerado
+                                token: tokenGenerado, // Enviamos el token
+                                usuario: usuarioEncontrado // Enviamos los datos del usuario
                             });
                     }
                 }
