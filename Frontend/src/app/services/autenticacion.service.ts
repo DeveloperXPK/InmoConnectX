@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +10,12 @@ export class AutenticacionService {
 
   private token: string = 'session_token'; // Nombre de la clave para guardar el token en sessionStorage
   private user: any = 'session_user'; // Nombre de la clave para guardar el usuario en sessionStorage
+  private authStatus = new BehaviorSubject<boolean>(this.isAuthenticated()); // BehaviorSubject para el estado de autenticación
+
+  // Se pone $ al final del nombre de la variable para indicar que es un observable
+  // asObservable convierte el BehaviorSubject en un observable
+  // Gracias a esto podemos cambiar el estado de autenticación desde cualquier componente
+  authStatus$ = this.authStatus.asObservable(); 
 
 
   constructor(private http: HttpClient, private router: Router) {} 
@@ -28,6 +35,8 @@ export class AutenticacionService {
     sessionStorage.setItem(this.token, token); // Guarda el token en sessionStorage
     // los parametros de la funcion setItem son el nombre de la clave y el valor que se va a guardar
     // en este caso el nombre de la clave es this.token y el valor es token el cual es el token que se recibe como parametro
+    this.authStatus.next(true); // Cambia el estado de autenticación a true
+  
   }
 
   setUser(user: any): void {
@@ -48,6 +57,7 @@ export class AutenticacionService {
     sessionStorage.removeItem(this.token); // Elimina el token de sessionStorage
     sessionStorage.removeItem(this.user); // Elimina el usuario de sessionStorage
     sessionStorage.removeItem('session_post'); // Elimina la publicación de sessionStorage
+    this.authStatus.next(false); // Cambia el estado de autenticación a false
   }
 
   // Metodo para obtener el header con el token
