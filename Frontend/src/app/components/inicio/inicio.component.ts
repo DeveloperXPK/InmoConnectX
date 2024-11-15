@@ -26,7 +26,6 @@ import { CommonModule } from "@angular/common";
     } @else {
       <h1>No hay inmuebles disponibles</h1>
     }
-    <button (click)="logout()">Cerrar Sesión</button>
   `,
   styleUrl: "./inicio.component.css",
 })
@@ -70,12 +69,7 @@ export class InicioComponent implements OnInit {
     });
   }
 
-  // Metodo para cerrar sesion
-  logout() {
-    // Se llama al metodo clearSesion del servicio AutenticacionService que limpia los datos de la sesion
-    this.autenticacionService.clearSesion(); 
-    this.router.navigate(["/login"]); // Se redirige al login
-  }
+ 
 
   // Metodo para ver los detalles de un inmueble 
   // Recibe como parametro el id del inmueble y asi anexar el id al path de la ruta
