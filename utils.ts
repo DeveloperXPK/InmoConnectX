@@ -1,13 +1,8 @@
-import { HttpClient } from "@angular/common/http";
-import { Component } from "@angular/core";
-import { Router } from "@angular/router";
-import { AutenticacionService } from "../../services/autenticacion.service";
-import { FormsModule } from "@angular/forms";
 
 @Component({
   selector: "app-crear-post",
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   template: `
     <div class="container">
       <div class="content">
@@ -43,9 +38,10 @@ import { FormsModule } from "@angular/forms";
               [(ngModel)]="ubicacion"
               required
             />
-            <input type="file" name="imagen" [(ngModel)]="imagenes" required />
+            <input type="file" name="imagen" (change)="onFileSelected($event)" required />
             <button (click)="createPost()">Crear Publicación</button>
           </form>
+           <img *ngIf="previewUrl" [src]="previewUrl" alt="Vista previa" style="max-width: 200px;" />
         </div>
       </div>
     </div>
@@ -57,8 +53,15 @@ export class CrearPostComponent {
   public descripcion: string = ""; // Variable que almacena la descripcion del post
   public precio: string = ""; // Variable que almacena el precio del post
   public ubicacion: string = ""; // Variable que almacena la ubicacion del post
-  public imagenes: string = ""; // Variable que almacena la imagen del post
+  // public imagenes: string = ""; // Variable que almacena la imagen del post
   public apiResponse: any = ""; // Variable que almacena la respuesta de la API
+
+
+  // Permite seleccionar un archivo, verifica que sea una imagen y lo almacena en la variable selectedFile
+  public selectedFile: File | null = null; // Variable que almacena el archivo seleccionado
+
+  // ArrayBuffer ayuda a convertir la imagen a un formato que se pueda mostrar en la vista
+  public previewUrl: string | ArrayBuffer | null = null; // Variable que almacena la imagen seleccionada
 
   // Dentro del constructor inyectamos autenticacionService para verificar si el usuario esta autenticado
   constructor(
@@ -74,17 +77,34 @@ export class CrearPostComponent {
     }
   }
 
+  onFileSelected(event: Event): void {
+    // Obtener el archivo seleccionado como input
+    const input = event.target as HTMLInputElement;
+
+    // Verificar si se selecciono un archivo
+    if (input.files && input.files[0]) {
+      this.selectedFile = input.files[0];
+
+      // Crear una vista previa de la imagen
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.previewUrl = reader.result;
+      };
+      reader.readAsDataURL(this.selectedFile);
+    }
+  }
+
+
   public createPost() {
     const url = "http://localhost:9898/publicaciones";
 
     // Creamos un objeto body que contiene los datos del post
-    // estos se obtienen 
+    // estos se obtienen de las variables del componente
     const body = {
       titulo: this.titulo,
       descripcion: this.descripcion,
       precio: this.precio,
       ubicacion: this.ubicacion,
-      imagenes: this.imagenes,
       usuario: {
         _id: this.autenticacionService.getUser()._id,
         nombre: this.autenticacionService.getUser().nombre,
@@ -98,12 +118,22 @@ export class CrearPostComponent {
       !this.descripcion ||
       !this.precio ||
       !this.ubicacion ||
-      !this.imagenes
+      !this.selectedFile
     ) {
       alert("No deben haber campos vacios");
       console.log("Faltan datos");
       return;
     }
+
+    const formData = new FormData();
+
+    // formData.append("titulo", this.titulo);
+    // formData.append("descripcion", this.descripcion);
+    // formData.append("precio", this.precio);
+    // formData.append("ubicacion", this.ubicacion);
+    formData.append("imagen", this.selectedFile);
+    // formData.append("usuario", this.autenticacionService.getUser()._id);
+
 
     // Si todos los campos estan llenos, se hace la peticion POST a la API
     // Se envia el body y los headers de autenticacion

@@ -10,23 +10,32 @@ import { CommonModule } from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   template: `
-    @if (inmuebles.length > 0) { 
-      @for (inmueble of inmuebles; track
-      inmueble._id) {
+    @if (inmuebles.length > 0) {
+    <div class="container">
+      @for (inmueble of inmuebles; track inmueble._id) {
+
       <div class="property-card">
         <div class="property-info">
+          <img
+            src="assets/images/casa.jpg"
+            [alt]="inmueble.titulo"
+            width="200"
+          />
           <h2>{{ inmueble.titulo }}</h2>
-          <h3>{{ inmueble.precio | currency : "COP" : "symbol-narrow" : "1.0-0"}}</h3>
+          <h3>
+            {{ inmueble.precio | currency : "COP" : "symbol-narrow" : "1.0-0" }}
+          </h3>
           <p>{{ inmueble.descripcion }}</p>
           <p>{{ inmueble.ubicacion }}</p>
           <a (click)="verDetalles(inmueble._id)">Saber más</a>
         </div>
       </div>
-      } 
+
+      }
+    </div>
     } @else {
-      <h1>No hay inmuebles disponibles</h1>
+    <h1>No hay inmuebles disponibles</h1>
     }
-    <button (click)="logout()">Cerrar Sesión</button>
   `,
   styleUrl: "./inicio.component.css",
 })
@@ -40,23 +49,20 @@ export class InicioComponent implements OnInit {
     private publicacionesService: PublicacionesService
   ) {}
 
-
   // Metodo que se ejecuta al cargar el componente
   ngOnInit() {
-
     // Si no hay una sesion activa, se redirige al login
     if (!this.autenticacionService.isAuthenticated()) {
       this.router.navigate(["/login"]);
       return; // Se finaliza la ejecucion del metodo
     }
-    
+
     // Si existe una sesion activa, se cargan los posts
     this.cargarPosts();
   }
 
   // Metodo para cargar los posts
   cargarPosts() {
-
     // Se llama al metodo getPosts del servicio PublicacionesService y se suscribe a la respuesta
     this.publicacionesService.getPosts().subscribe({
       next: (data) => {
@@ -70,14 +76,7 @@ export class InicioComponent implements OnInit {
     });
   }
 
-  // Metodo para cerrar sesion
-  logout() {
-    // Se llama al metodo clearSesion del servicio AutenticacionService que limpia los datos de la sesion
-    this.autenticacionService.clearSesion(); 
-    this.router.navigate(["/login"]); // Se redirige al login
-  }
-
-  // Metodo para ver los detalles de un inmueble 
+  // Metodo para ver los detalles de un inmueble
   // Recibe como parametro el id del inmueble y asi anexar el id al path de la ruta
   verDetalles(id: string) {
     this.router.navigate(["/publicacion", id]); // Se redirige a la ruta /publicacion/:id

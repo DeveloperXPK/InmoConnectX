@@ -12,7 +12,6 @@ import { AutenticacionService } from "../../services/autenticacion.service";
     <div class="container">
       <div class="content">
         <img src="assets/images/interior.jpg" alt="Imagen de registro" />
-        <!-- Coloca aquí la ruta de tu imagen -->
         <div class="form-container">
           <h2>Iniciar Sesion</h2>
           <form class="form-group">
@@ -39,9 +38,10 @@ import { AutenticacionService } from "../../services/autenticacion.service";
   styleUrl: "./login.component.css",
 })
 export class LoginComponent {
+
   // Obtenemos los datos del usuario desde el formulario
-  public email: string = "";
-  public password: string = "";
+  public email: string = ""; // Email del usuario ingresado en el formulario
+  public password: string = ""; // Contraseña del usuario ingresada en el formulario
   public apiResponse: any = ""; // Variable que se va a utilizar para almacenar la respuesta de la API
 
   // Inyectamos los servicios que vamos a utilizar en el componente con el constructor
@@ -67,14 +67,22 @@ export class LoginComponent {
       .post(url, body, { headers: this.autenticacionService.getAuthHeaders() })
       .subscribe({
         next: (res) => {
-          this.apiResponse = res; // Se almacena la respuesta de la API en la variable apiResponse
-          const token = this.apiResponse.token; // Se obtiene el token de la respuesta de la API
-          const user = this.apiResponse.usuario;
 
-          this.autenticacionService.setToken(token); // Se guarda el token en el servicio AutenticacionService
-          this.autenticacionService.setUser(user);
-          console.log(this.apiResponse);
-          this.router.navigate(["inicio"]); // Se redirige a la ruta inicio
+          // A partir del componente se obtiene la respuesta de la API
+          this.apiResponse = res; // respuesta de la API en la variable apiResponse
+
+          // Variables que permiten un mejor manejo de los datos
+          const token = this.apiResponse.token; // token de la respuesta de la API
+          const user = this.apiResponse.usuario; // usuario de la respuesta de la API
+
+          // this hace referencia a la clase actual (LoginComponent), obtenemos el token y el usuario de la respuesta de la API
+          this.autenticacionService.setToken(token); // Token
+          this.autenticacionService.setUser(user); // Usuario
+
+          // console.log(this.apiResponse); // Se imprime la respuesta de la API en la consola
+
+          // Al enviar las credenciales correctas, se redirige a la ruta inicio
+          this.router.navigate(["inicio"]);
         },
         error: (err) => {
           alert("Las credenciales no coinciden"); // Se muestra un mensaje de error si las credenciales no coinciden
