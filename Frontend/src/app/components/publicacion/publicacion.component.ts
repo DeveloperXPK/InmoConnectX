@@ -14,9 +14,7 @@ import { Posts } from "../../interfaces/posts";
     <div class="container">
       <h2>{{ post.titulo }}</h2>
       <div class="main-image">
-        @if (post.imagen) {
-        <img [src]="post.imagen" [alt]="post.titulo" />
-        }
+        <img src="assets/images/casa.jpg" [alt]="post.titulo" width="200" />
       </div>
       <div class="details">
         <p class="price">
@@ -71,14 +69,13 @@ export class PublicacionComponent implements OnInit {
     const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
     const postInfo = this.publicacionService.getSessionPost(); // Obtener la información de la publicación
 
-    console.log("Id de usuario de la sesion" ,User._id);
+    console.log("Id de usuario de la sesion", User._id);
     console.log("Id de usuario de la publicacion", postInfo.usuario);
-    console.log("Rol de usuario de la sesion" ,User.rol);
-
+    console.log("Rol de usuario de la sesion", User.rol);
 
     // Verificar si el usuario autenticado es el autor de la publicación o es un administrador
     // Si no es el autor o no es un administrador, no se permite eliminar la publicación
-    if((postInfo.usuario == User._id) || (User.rol == 'admin')) {
+    if (postInfo.usuario == User._id || User.rol == "admin") {
       this.publicacionService.deletePost(id).subscribe({
         next: (response) => {
           console.log("Publicación eliminada:", response);
@@ -86,15 +83,13 @@ export class PublicacionComponent implements OnInit {
         },
         error: (error) => {
           console.error("Error al eliminar la publicación:", error);
-        }
-      })
+        },
+      });
       return; // El return se hace para que no se ejecute el código que sigue
     }
 
     alert("No tienes permisos para eliminar esta publicación");
     console.error("No tienes permisos para eliminar esta publicación");
     return; // El return se hace para que no se ejecute el código que sigue
-
-    
   }
 }

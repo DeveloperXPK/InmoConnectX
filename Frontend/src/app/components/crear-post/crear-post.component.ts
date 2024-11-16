@@ -43,13 +43,7 @@ import { FormsModule } from "@angular/forms";
               [(ngModel)]="ubicacion"
               required
             />
-            <input
-              type="text"
-              placeholder="Imagen"
-              name="imagen"
-              [(ngModel)]="imagen"
-              required
-            />
+            <input type="file" name="imagen" [(ngModel)]="imagenes" required />
             <button (click)="createPost()">Crear Publicación</button>
           </form>
         </div>
@@ -63,7 +57,7 @@ export class CrearPostComponent {
   public descripcion: string = ""; // Variable que almacena la descripcion del post
   public precio: string = ""; // Variable que almacena el precio del post
   public ubicacion: string = ""; // Variable que almacena la ubicacion del post
-  public imagen: string = ""; // Variable que almacena la imagen del post
+  public imagenes: string = ""; // Variable que almacena la imagen del post
   public apiResponse: any = ""; // Variable que almacena la respuesta de la API
 
   // Dentro del constructor inyectamos autenticacionService para verificar si el usuario esta autenticado
@@ -83,12 +77,14 @@ export class CrearPostComponent {
   public createPost() {
     const url = "http://localhost:9898/publicaciones";
 
+    // Creamos un objeto body que contiene los datos del post
+    // estos se obtienen 
     const body = {
       titulo: this.titulo,
       descripcion: this.descripcion,
       precio: this.precio,
       ubicacion: this.ubicacion,
-      imagen: this.imagen,
+      imagenes: this.imagenes,
       usuario: {
         _id: this.autenticacionService.getUser()._id,
         nombre: this.autenticacionService.getUser().nombre,
@@ -96,18 +92,22 @@ export class CrearPostComponent {
       },
     };
 
+    // Hacemos una validacion para verificar que no haya campos vacios
     if (
       !this.titulo ||
       !this.descripcion ||
       !this.precio ||
       !this.ubicacion ||
-      !this.imagen
+      !this.imagenes
     ) {
       alert("No deben haber campos vacios");
       console.log("Faltan datos");
       return;
     }
 
+    // Si todos los campos estan llenos, se hace la peticion POST a la API
+    // Se envia el body y los headers de autenticacion
+    // Si la peticion es exitosa, se redirige al usuario a la pagina de inicio
     this.http
       .post(url, body, { headers: this.autenticacionService.getAuthHeaders() })
       .subscribe({
