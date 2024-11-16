@@ -4,7 +4,7 @@ export interface Posts {
     descripcion: string;
     precio: number;
     ubicacion: string;
-    imagen: string;
+    imagenes: string;
     usuario: {
         _id: string;
         nombre: string;
