@@ -12,20 +12,56 @@ import { Posts } from "../../interfaces/posts";
   template: `
     @if (post) {
     <div class="container">
-      <h2>{{ post.titulo }}</h2>
-      <div class="main-image">
-        <img src="assets/images/casa.jpg" [alt]="post.titulo" width="200" />
+      <div class="container-left">
+        <h1>{{ post.titulo }}</h1>
+        <img class="main" src="assets/images/casa.jpg" alt="Principal" />
+        <section class="group-images">
+          <img src="assets/images/casa.jpg" alt="secondary" />
+          <img src="assets/images/casa.jpg" alt="secondary" />
+          <img src="assets/images/casa.jpg" alt="secondary" />
+          <img src="assets/images/casa.jpg" alt="secondary" />
+        </section>
       </div>
-      <div class="details">
-        <p class="price">
-          {{ post.precio | currency : "COP" : "symbol-narrow" : "1.0-0" }}
-        </p>
-        <p class="description">{{ post.descripcion }}</p>
-        <p class="location">{{ post.ubicacion }}</p>
+      <div class="container-right">
+        <section class="info">
+          <h2>
+            {{ post.precio | currency : "COP" : "symbol-narrow" : "1.0-0" }}
+          </h2>
+          <h3>⭐⭐⭐⭐⭐</h3>
+          <p>{{ post.descripcion }}</p>
+          <p>{{ post.ubicacion }}</p>
+        </section>
+        <section class="cards">
+          @for (inmueble of inmuebles; track inmueble._id) {
+
+          <div class="property-card">
+            <div class="property-info">
+              <img
+                src="assets/images/casa.jpg"
+                [alt]="inmueble.titulo"
+                width="200"
+              />
+              <h2>{{ inmueble.titulo }}</h2>
+              <h3>
+                {{
+                  inmueble.precio | currency : "COP" : "symbol-narrow" : "1.0-0"
+                }}
+              </h3>
+              <p>{{ inmueble.descripcion }}</p>
+              <p>{{ inmueble.ubicacion }}</p>
+              <a (click)="verDetalles(inmueble._id)">Saber más</a>
+            </div>
+          </div>
+
+          }
+        </section>
+        <button (click)="volver()">Volver</button>
+        <button *ngIf="isOwnerPost" (click)="eliminarPost(post._id)">
+          Eliminar
+        </button>
       </div>
-      <button (click)="volver()">Volver</button>
-      <button (click)="eliminarPost(post._id)">Eliminar</button>
     </div>
+
     } @else {
     <p>Cargando publicación...</p>
     }
@@ -34,11 +70,13 @@ import { Posts } from "../../interfaces/posts";
 })
 export class PublicacionComponent implements OnInit {
   post?: Posts;
+  inmuebles: Posts[] = []; // Se crea un arreglo de tipo Posts para almacenar los inmuebles
+  isOwnerPost = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private publicacionService: PublicacionesService,
+    private publicacionesService: PublicacionesService,
     private autenticacionService: AutenticacionService
   ) {}
 
@@ -46,16 +84,26 @@ export class PublicacionComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get("id"); // Obtener el id de la URL
 
     if (id) {
-      this.publicacionService.getPost(id).subscribe({
+      this.publicacionesService.getPost(id).subscribe({
         next: (response) => {
           this.post = response.publicacion;
-          this.publicacionService.setPost(this.post); // Guardar la publicación en sessionStorage
+          this.publicacionesService.setPost(this.post); // Guardar la publicación en sessionStorage
+          const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
+          const postInfo = this.publicacionesService.getSessionPost(); // Obtener la información de la publicación
+
+          if (postInfo.usuario == User._id || User.rol == "admin") {
+            this.isOwnerPost = true;
+          }
         },
         error: (error) => {
           console.error("Error al cargar la publicación:", error);
           this.router.navigate(["/inicio"]); // Redirigir en caso de error
         },
       });
+
+      this.cargarPosts();
+
+      console.log(this.isOwnerPost);
     } else {
       this.router.navigate(["/inicio"]);
     }
@@ -65,9 +113,22 @@ export class PublicacionComponent implements OnInit {
     this.router.navigate(["/inicio"]);
   }
 
+  isOwner() {
+    const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
+    const postInfo = this.publicacionesService.getSessionPost(); // Obtener la información de la publicación
+
+    console.log("Id de usuario de la sesion", User._id);
+    console.log("Id de usuario de la publicacion", postInfo.usuario);
+    if (postInfo.usuario == User._id || User.rol == "admin") {
+      return (this.isOwnerPost = true);
+    }
+
+    return (this.isOwnerPost = false);
+  }
+
   eliminarPost(id: string) {
     const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
-    const postInfo = this.publicacionService.getSessionPost(); // Obtener la información de la publicación
+    const postInfo = this.publicacionesService.getSessionPost(); // Obtener la información de la publicación
 
     console.log("Id de usuario de la sesion", User._id);
     console.log("Id de usuario de la publicacion", postInfo.usuario);
@@ -76,7 +137,7 @@ export class PublicacionComponent implements OnInit {
     // Verificar si el usuario autenticado es el autor de la publicación o es un administrador
     // Si no es el autor o no es un administrador, no se permite eliminar la publicación
     if (postInfo.usuario == User._id || User.rol == "admin") {
-      this.publicacionService.deletePost(id).subscribe({
+      this.publicacionesService.deletePost(id).subscribe({
         next: (response) => {
           console.log("Publicación eliminada:", response);
           this.router.navigate(["/inicio"]);
@@ -91,5 +152,24 @@ export class PublicacionComponent implements OnInit {
     alert("No tienes permisos para eliminar esta publicación");
     console.error("No tienes permisos para eliminar esta publicación");
     return; // El return se hace para que no se ejecute el código que sigue
+  }
+
+  // Metodo para cargar los posts
+  cargarPosts() {
+    // Se llama al metodo getPosts del servicio PublicacionesService y se suscribe a la respuesta
+    this.publicacionesService.getPosts().subscribe({
+      next: (data) => {
+        this.inmuebles = data.publicaciones; // data.publicaciones es el nombre del objeto que se recibe del backend
+        console.log("Posts cargados", this.inmuebles); // Se imprime en consola los posts cargados
+      },
+      // En caso de error, se imprime en consola el error
+      error: (error) => {
+        console.log("Error al cargar los posts", error);
+      },
+    });
+  }
+
+  verDetalles(id: string) {
+    this.router.navigate(["/publicacion", id]); // Se redirige a la ruta /publicacion/:id
   }
 }
