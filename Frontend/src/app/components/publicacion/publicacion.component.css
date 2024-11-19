@@ -9,15 +9,17 @@
   width: 50%;
   text-align: center;
   border-radius: 5px;
+  max-height: fit-content;
 }
 
 .container-left h1 {
   font-size: 35px;
+  color: #0056b3;
 }
 
 .container-left img {
   border-radius: 5px;
-  width: 500px;
+  max-width: fit-content;
   margin: 40px 0 10px;
 }
 
@@ -32,6 +34,10 @@
 }
 
 .container-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
   margin: 0;
   padding: 20px;
   width: 50%;
@@ -44,9 +50,14 @@
   background-color: white;
   padding: 20px;
   border-radius: 5px;
-  height: 200px;
   width: 100%;
-  max-height: 300px;
+  max-height: fit-content;
+}
+
+.info h2 {
+  font-size: 25px;
+  margin: 10px 0;
+  color: #0056b3;
 }
 
 .cards {
@@ -78,7 +89,7 @@
 
 .property-card h3 {
   font-size: 16px;
-  color: #007bff;
+  color: #0056b3;
   margin: 5px 0;
 }
 
@@ -91,7 +102,7 @@
 .property-card a, button{
   display: inline-block;
   text-decoration: none;
-  background-color: #007bff;
+  background-color: #0056b3;
   color: white;
   padding: 10px 15px;
   border-radius: 5px;

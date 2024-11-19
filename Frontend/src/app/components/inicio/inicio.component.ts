@@ -10,6 +10,11 @@ import { CommonModule } from "@angular/common";
   standalone: true,
   imports: [CommonModule],
   template: `
+    <div class="search-section">
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar inmueble" />
+      </div>
+    </div>
     @if (inmuebles.length > 0) {
     <div class="container">
       @for (inmueble of inmuebles; track inmueble._id) {
@@ -33,9 +38,7 @@ import { CommonModule } from "@angular/common";
 
       }
     </div>
-    } @else {
-    <h1>No hay inmuebles disponibles</h1>
-    }
+    } 
   `,
   styleUrl: "./inicio.component.css",
 })
@@ -67,7 +70,7 @@ export class InicioComponent implements OnInit {
     this.publicacionesService.getPosts().subscribe({
       next: (data) => {
         this.inmuebles = data.publicaciones; // data.publicaciones es el nombre del objeto que se recibe del backend
-        console.log("Posts cargados", this.inmuebles); // Se imprime en consola los posts cargados
+        // console.log("Posts cargados", this.inmuebles); // Se imprime en consola los posts cargados
       },
       // En caso de error, se imprime en consola el error
       error: (error) => {

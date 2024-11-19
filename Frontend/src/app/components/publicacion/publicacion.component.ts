@@ -24,12 +24,14 @@ import { Posts } from "../../interfaces/posts";
       </div>
       <div class="container-right">
         <section class="info">
+        <div class="post-info">
+          <h3>⭐⭐⭐⭐⭐</h3>
           <h2>
             {{ post.precio | currency : "COP" : "symbol-narrow" : "1.0-0" }}
           </h2>
-          <h3>⭐⭐⭐⭐⭐</h3>
           <p>{{ post.descripcion }}</p>
           <p>{{ post.ubicacion }}</p>
+        </div>
         </section>
         <section class="cards">
           @for (inmueble of inmuebles; track inmueble._id) {
@@ -55,10 +57,12 @@ import { Posts } from "../../interfaces/posts";
 
           }
         </section>
-        <button (click)="volver()">Volver</button>
-        <button *ngIf="isOwnerPost" (click)="eliminarPost(post._id)">
-          Eliminar
-        </button>
+        <div class="options">
+          <button (click)="volver()">Volver</button>
+          <button *ngIf="isOwnerPost" (click)="eliminarPost(post._id)">
+            Eliminar
+          </button>
+        </div>
       </div>
     </div>
 
@@ -94,6 +98,7 @@ export class PublicacionComponent implements OnInit {
           if (postInfo.usuario == User._id || User.rol == "admin") {
             this.isOwnerPost = true;
           }
+          console.log(this.isOwnerPost);
         },
         error: (error) => {
           console.error("Error al cargar la publicación:", error);
@@ -103,7 +108,7 @@ export class PublicacionComponent implements OnInit {
 
       this.cargarPosts();
 
-      console.log(this.isOwnerPost);
+      
     } else {
       this.router.navigate(["/inicio"]);
     }
@@ -130,9 +135,9 @@ export class PublicacionComponent implements OnInit {
     const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
     const postInfo = this.publicacionesService.getSessionPost(); // Obtener la información de la publicación
 
-    console.log("Id de usuario de la sesion", User._id);
-    console.log("Id de usuario de la publicacion", postInfo.usuario);
-    console.log("Rol de usuario de la sesion", User.rol);
+    // console.log("Id de usuario de la sesion", User._id);
+    // console.log("Id de usuario de la publicacion", postInfo.usuario);
+    // console.log("Rol de usuario de la sesion", User.rol);
 
     // Verificar si el usuario autenticado es el autor de la publicación o es un administrador
     // Si no es el autor o no es un administrador, no se permite eliminar la publicación
@@ -150,7 +155,7 @@ export class PublicacionComponent implements OnInit {
     }
 
     alert("No tienes permisos para eliminar esta publicación");
-    console.error("No tienes permisos para eliminar esta publicación");
+    // console.error("No tienes permisos para eliminar esta publicación");
     return; // El return se hace para que no se ejecute el código que sigue
   }
 
@@ -160,7 +165,7 @@ export class PublicacionComponent implements OnInit {
     this.publicacionesService.getPosts().subscribe({
       next: (data) => {
         this.inmuebles = data.publicaciones; // data.publicaciones es el nombre del objeto que se recibe del backend
-        console.log("Posts cargados", this.inmuebles); // Se imprime en consola los posts cargados
+        // console.log("Posts cargados", this.inmuebles); // Se imprime en consola los posts cargados
       },
       // En caso de error, se imprime en consola el error
       error: (error) => {
