@@ -40,9 +40,13 @@ function validarToken(req, res, next) {
         // Decodificamos el token
         const payload = jwt.decode(token, SECRET);
 
-        // Guardamos el id y el rol en el header
-        req.header.usuarioId = payload.sub;
-        req.header.usuarioRol = payload.rol;
+        // Guardamos la información del usuario en req.user
+        req.user = {
+            _id: payload.sub,
+            nombre: payload.name,
+            email: payload.email,
+            rol: payload.rol
+        };
 
         // Contimuamos con la ejecución
         next();
@@ -58,8 +62,8 @@ function validarPermiso(rolesPermitidos) {
     // Retornamos una funcion que se ejecuta en la ruta
     return (req, res, next) => {
 
-        // Verificamos los roles permitidos en la cabecera
-        if (rolesPermitidos.includes(req.header.usuarioRol)) {
+        // Verificamos los roles permitidos usando req.user.rol en lugar de req.header.usuarioRol
+        if (rolesPermitidos.includes(req.user.rol)) {
 
             // Continuamos con la peticion
             next();

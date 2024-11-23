@@ -88,7 +88,7 @@ export class CrearPostComponent {
       usuario: {
         _id: this.autenticacionService.getUser()._id,
         nombre: this.autenticacionService.getUser().nombre,
-        email: this.autenticacionService.getUser().email,
+        email: this.autenticacionService.getUser().email
       },
     };
 
