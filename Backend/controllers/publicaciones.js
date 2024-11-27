@@ -8,11 +8,7 @@ function crearPublicacion(req, res) {
         descripcion: req.body.descripcion,
         precio: req.body.precio,
         ubicacion: req.body.ubicacion,
-        usuario: {
-            _id: req.user._id,
-            nombre: req.user.nombre,
-            email: req.user.email
-        }
+        usuario: req.user
     });
 
     nuevaPublicacion.save()

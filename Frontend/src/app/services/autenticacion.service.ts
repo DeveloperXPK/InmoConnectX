@@ -32,11 +32,8 @@ export class AutenticacionService {
 
   // Metodo para enviar el token al servidor
   setToken(token: string): void {
-    sessionStorage.setItem(this.token, token); // Guarda el token en sessionStorage
-    // los parametros de la funcion setItem son el nombre de la clave y el valor que se va a guardar
-    // en este caso el nombre de la clave es this.token y el valor es token el cual es el token que se recibe como parametro
+    sessionStorage.setItem(this.token, token); // Guarda el token en sessionStorage (key: this.token, value: token)
     this.authStatus.next(true); // Cambia el estado de autenticación a true
-  
   }
 
   setUser(user: any): void {
