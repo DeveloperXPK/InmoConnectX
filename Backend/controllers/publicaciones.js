@@ -3,40 +3,22 @@ const Publicaciones = require('../models/publicaciones');
 
 // Crear una publicación
 function crearPublicacion(req, res) {
+    const nuevaPublicacion = new Publicaciones({
+        titulo: req.body.titulo,
+        descripcion: req.body.descripcion,
+        precio: req.body.precio,
+        ubicacion: req.body.ubicacion,
+        usuario: req.user
+    });
 
-    // Obtenemos los datos de la publicación desde el cuerpo de la petición (req.body)
-    const {
-        titulo, // Título de la publicación
-        precio, // Precio de la publicación
-        descripcion, // Descripción de la publicación
-        ubicacion, // Ubicación de la publicación
-        imagenes, // Imágenes de la publicación
-        usuario // Usuario que crea la publicación
-    } = req.body;
-
-    // Creamos la publicación
-    const publicacion = new Publicaciones();
-    publicacion.titulo = titulo; // Guardamos el título de la publicación
-    publicacion.precio = precio; // Guardamos el precio de la publicación
-    publicacion.descripcion = descripcion; // Guardamos la descripción de la publicación
-    publicacion.ubicacion = ubicacion; // Guardamos la ubicación de la publicación
-    publicacion.imagenes = imagenes; // Guardamos las imágenes de la publicación
-    publicacion.usuario = usuario;
-
-    // Guardamos la publicación en la base de datos
-    publicacion.save()
-        .then(
-            // Si la publicación se guarda correctamente enviamos un mensaje de éxito
-            // y la publicación guardada
-            (publicacionGuardada) => {
-                res.status(200).send({ publicacion: publicacionGuardada });
-            },
-            // Si ocurre un error al guardar la publicación enviamos un mensaje de error
-            err => {
-                res.status(500).send({ message: 'Error al guardar la publicación' });
-            }
-        );
-};
+    nuevaPublicacion.save()
+        .then(publicacion => {
+            res.status(201).json({ publicacion });
+        })
+        .catch(error => {
+            res.status(500).json({ error: 'Error al crear la publicación' });
+        });
+}
 
 // Editar una publicación
 function editarPublicacion(req, res) {

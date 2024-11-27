@@ -24,37 +24,39 @@ import { Posts } from "../../interfaces/posts";
       </div>
       <div class="container-right">
         <section class="info">
-        <div class="post-info">
-          <h3>⭐⭐⭐⭐⭐</h3>
-          <h2>
-            {{ post.precio | currency : "COP" : "symbol-narrow" : "1.0-0" }}
-          </h2>
-          <p>{{ post.descripcion }}</p>
-          <p>{{ post.ubicacion }}</p>
-        </div>
+          <div class="post-info">
+            <h3>⭐⭐⭐⭐⭐</h3>
+            <h2>
+              {{ post.precio | currency : "COP" : "symbol-narrow" : "1.0-0" }}
+            </h2>
+            <p>{{ post.descripcion }}</p>
+            <p>{{ post.ubicacion }}</p>
+          </div>
         </section>
         <section class="cards">
           @for (inmueble of inmuebles; track inmueble._id) {
 
-          <div class="property-card">
-            <div class="property-info">
-              <img
-                src="assets/images/casa.jpg"
-                [alt]="inmueble.titulo"
-                width="200"
-              />
-              <h2>{{ inmueble.titulo }}</h2>
-              <h3>
-                {{
-                  inmueble.precio | currency : "COP" : "symbol-narrow" : "1.0-0"
-                }}
-              </h3>
-              <p>{{ inmueble.descripcion }}</p>
-              <p>{{ inmueble.ubicacion }}</p>
-              <a (click)="verDetalles(inmueble._id)">Saber más</a>
+          <ng-container *ngIf="inmueble._id !== post._id">
+            <div class="property-card">
+              <div class="property-info">
+                <img
+                  src="assets/images/casa.jpg"
+                  [alt]="inmueble.titulo"
+                  width="200"
+                />
+                <h2>{{ inmueble.titulo }}</h2>
+                <h3>
+                  {{
+                    inmueble.precio
+                      | currency : "COP" : "symbol-narrow" : "1.0-0"
+                  }}
+                </h3>
+                <p>{{ inmueble.descripcion }}</p>
+                <p>{{ inmueble.ubicacion }}</p>
+                <a (click)="verDetalles(inmueble._id)">Saber más</a>
+              </div>
             </div>
-          </div>
-
+          </ng-container>
           }
         </section>
         <div class="options">
@@ -90,12 +92,13 @@ export class PublicacionComponent implements OnInit {
     if (id) {
       this.publicacionesService.getPost(id).subscribe({
         next: (response) => {
-          this.post = response.publicacion;
-          this.publicacionesService.setPost(this.post); // Guardar la publicación en sessionStorage
-          const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
+          const user = this.autenticacionService.getUser();
           const postInfo = this.publicacionesService.getSessionPost(); // Obtener la información de la publicación
 
-          if (postInfo.usuario == User._id || User.rol == "admin") {
+          console.log("Publicación cargada:", response);
+          this.post = response.publicacion;
+          this.publicacionesService.setPost(this.post); // Guardar la publicación en sessionStorage
+          if (postInfo.usuario._id == user._id || user.rol == "admin") {
             this.isOwnerPost = true;
           }
           console.log(this.isOwnerPost);
@@ -107,8 +110,6 @@ export class PublicacionComponent implements OnInit {
       });
 
       this.cargarPosts();
-
-      
     } else {
       this.router.navigate(["/inicio"]);
     }
@@ -121,10 +122,7 @@ export class PublicacionComponent implements OnInit {
   isOwner() {
     const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
     const postInfo = this.publicacionesService.getSessionPost(); // Obtener la información de la publicación
-
-    console.log("Id de usuario de la sesion", User._id);
-    console.log("Id de usuario de la publicacion", postInfo.usuario);
-    if (postInfo.usuario == User._id || User.rol == "admin") {
+    if (postInfo.usuario._id == User._id || User.rol == "admin") {
       return (this.isOwnerPost = true);
     }
 
@@ -135,13 +133,9 @@ export class PublicacionComponent implements OnInit {
     const User = this.autenticacionService.getUser(); // Obtener el id del usuario autenticado
     const postInfo = this.publicacionesService.getSessionPost(); // Obtener la información de la publicación
 
-    // console.log("Id de usuario de la sesion", User._id);
-    // console.log("Id de usuario de la publicacion", postInfo.usuario);
-    // console.log("Rol de usuario de la sesion", User.rol);
-
     // Verificar si el usuario autenticado es el autor de la publicación o es un administrador
     // Si no es el autor o no es un administrador, no se permite eliminar la publicación
-    if (postInfo.usuario == User._id || User.rol == "admin") {
+    if (postInfo.usuario._id == User._id || User.rol == "admin") {
       this.publicacionesService.deletePost(id).subscribe({
         next: (response) => {
           console.log("Publicación eliminada:", response);

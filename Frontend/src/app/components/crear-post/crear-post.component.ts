@@ -76,6 +76,7 @@ export class CrearPostComponent {
 
   public createPost() {
     const url = "http://localhost:9898/publicaciones";
+    const user = this.autenticacionService.getUser();
 
     // Creamos un objeto body que contiene los datos del post
     // estos se obtienen 
@@ -85,11 +86,7 @@ export class CrearPostComponent {
       precio: this.precio,
       ubicacion: this.ubicacion,
       imagenes: this.imagenes,
-      usuario: {
-        _id: this.autenticacionService.getUser()._id,
-        nombre: this.autenticacionService.getUser().nombre,
-        email: this.autenticacionService.getUser().email,
-      },
+      usuario: user,
     };
 
     // Hacemos una validacion para verificar que no haya campos vacios
